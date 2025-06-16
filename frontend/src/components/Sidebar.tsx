@@ -1,20 +1,19 @@
 import '../assets/styles/layout.css';
-import { AddMusicFile, OpenFileSelector } from '../../wailsjs/go/libmanager/Service';
+import { AddMusicFolder, OpenDirectorySelector } from '../../wailsjs/go/libmanager/Service';
 
 export default function Sidebar() {
-  const handleAddMusic = async () => {
-    try {
-      // Get the context to access the Wails runtime
-      const filePath = await OpenFileSelector();
-      if (!filePath) return;
+const handleAddMusic = async () => {
+  try {
+    const folder = await OpenDirectorySelector();
+    if (!folder) return;
 
-      await AddMusicFile(filePath);
-      alert(`Added ${filePath}`);
-    } catch (error) {
-      console.error("Error adding music:", error);
-      alert("Failed to add music. Please try again.");
-    }
-  };
+    const tracks = await AddMusicFolder(folder);
+    alert(`Added ${tracks.length} tracks to library.`);
+  } catch (error) {
+    console.error("Error adding music folder:", error);
+    alert("Failed to add music from folder.");
+  }
+};
 
   return (
     <aside className="sidebar">

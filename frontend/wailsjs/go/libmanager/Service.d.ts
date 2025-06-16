@@ -3,8 +3,8 @@
 import {libmanager} from '../models';
 import {context} from '../models';
 
-export function AddMusicFile(arg1:string):Promise<libmanager.Track>;
+export function AddMusicFolder(arg1:string):Promise<Array<libmanager.Track>>;
 
-export function OpenFileSelector():Promise<string>;
+export function OpenDirectorySelector():Promise<string>;
 
 export function SetContext(arg1:context.Context):Promise<void>;

@@ -12,12 +12,13 @@ import (
 	"github.com/google/uuid"
 )
 
+
 type Library struct {
 	Tracks map[string]Track
 	Dir    string
 }
 
-// create the library and ensure the storage dir exists.
+// create the library and ensure the storage directory exists
 func NewLibrary(path string) (*Library, error) {
 	if err := os.MkdirAll(path, 0755); err != nil {
 		return nil, err
@@ -28,25 +29,32 @@ func NewLibrary(path string) (*Library, error) {
 	}, nil
 }
 
-// copy an audio file to the library directory and index it
-func (l *Library) AddTrack(srcPath string) (Track, error) {
+// copy a file to an album folder
+func (l *Library) AddTrackToAlbum(srcPath string, albumName string) (Track, error) {
 	ext := strings.ToLower(filepath.Ext(srcPath))
 	if ext != ".flac" && ext != ".wav" {
 		return Track{}, errors.New("unsupported file format")
 	}
 
-	id := uuid.NewString()
-	dst := filepath.Join(l.Dir, id+ext)
+	originalName := filepath.Base(srcPath)
+	albumDir := filepath.Join(l.Dir, albumName)
+	if err := os.MkdirAll(albumDir, 0755); err != nil {
+		return Track{}, err
+	}
 
+	dst := filepath.Join(albumDir, originalName)
 	if err := copyFile(srcPath, dst); err != nil {
 		return Track{}, err
 	}
 
+	id := uuid.NewString()
 	track := Track{
 		ID:        id,
 		FilePath:  dst,
-		Title:     filepath.Base(srcPath),
-		Format:    ext[1:], // remove the dot from the extension
+		Original:  originalName,
+		Title:     strings.TrimSuffix(originalName, ext),
+		Format:    ext[1:], // remove dot
+		Album:     albumName,
 		DateAdded: time.Now(),
 	}
 
@@ -54,7 +62,7 @@ func (l *Library) AddTrack(srcPath string) (Track, error) {
 	return track, nil
 }
 
-// delete a track from the library and disk.
+// delete a track from the library
 func (l *Library) RemoveTrack(id string) error {
 	track, ok := l.Tracks[id]
 	if !ok {
@@ -67,7 +75,7 @@ func (l *Library) RemoveTrack(id string) error {
 	return nil
 }
 
-// persist the track map to JSON
+// persist the track map to a JSON file
 func (l *Library) Save(jsonPath string) error {
 	data, err := json.MarshalIndent(l.Tracks, "", "  ")
 	if err != nil {
@@ -76,7 +84,7 @@ func (l *Library) Save(jsonPath string) error {
 	return os.WriteFile(jsonPath, data, 0644)
 }
 
-// restore the track map from JSON
+// restore the track map from a JSON file
 func (l *Library) Load(jsonPath string) error {
 	data, err := os.ReadFile(jsonPath)
 	if err != nil {
@@ -85,6 +93,7 @@ func (l *Library) Load(jsonPath string) error {
 	return json.Unmarshal(data, &l.Tracks)
 }
 
+// internal copy utility
 func copyFile(src, dst string) error {
 	in, err := os.Open(src)
 	if err != nil {

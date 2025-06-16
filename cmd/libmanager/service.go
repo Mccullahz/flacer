@@ -1,6 +1,9 @@
 package libmanager
 
 import (
+	"os"
+	"path/filepath"
+	"strings"
 	"errors"
 	"context"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -21,31 +24,56 @@ func NewService() *Service {
 	return &Service{library: lib}
 }
 
-// internal helper, not exposed
-func (s *Service) openFileSelectorInternal() (string, error) {
-    if s.ctx == nil {
-        return "", errors.New("runtime context is not set")
-    }
-
-    filters := []runtime.FileFilter{
-        {
-            DisplayName: "Lossless Audio",
-            Pattern:     "*.flac;*.wav",
-        },
-    }
-
-    return runtime.OpenFileDialog(s.ctx, runtime.OpenDialogOptions{
-        Title:   "Select a music file",
-        Filters: filters,
-    })
+// frontend calls this to select a folder
+func (s *Service) OpenDirectorySelector() (string, error) {
+	return runtime.OpenDirectoryDialog(s.ctx, runtime.OpenDialogOptions{
+		Title: "Select a music folder",
+	})
 }
 
-// exposed func to frontend
-func (s *Service) OpenFileSelector() (string, error) {
-    return s.openFileSelectorInternal()
-}
+// frontend calls this to add tracks from folder
+func (s *Service) AddMusicFolder(folderPath string) ([]Track, error) {
+	if folderPath == "" {
+		return nil, errors.New("no folder selected")
+	}
 
-func (s *Service) AddMusicFile(filePath string) (Track, error) {
-	return s.library.AddTrack(filePath)
+	albumName := filepath.Base(folderPath) // use folder name as album name
+	var tracks []Track
+
+	err := filepath.Walk(folderPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil || info.IsDir() {
+			return nil
+		}
+		ext := strings.ToLower(filepath.Ext(path))
+		if ext == ".flac" || ext == ".wav" {
+			track, err := s.library.AddTrackToAlbum(path, albumName)
+			if err == nil {
+				tracks = append(tracks, track)
+			}
+		}
+		return nil
+	})
+	// scan for album art
+	files, err := os.ReadDir(folderPath)
+	if err == nil {
+		for _, file := range files {
+			if file.IsDir() {
+				continue
+			}
+			ext := strings.ToLower(filepath.Ext(file.Name()))
+			if ext == ".jpg" || ext == ".jpeg" || ext == ".png" {
+				srcCover := filepath.Join(folderPath, file.Name())
+				destCover := filepath.Join(s.library.Dir, albumName, "cover"+ext)
+				_ = copyFile(srcCover, destCover)
+				break // only copy the first valid cover found
+			}
+		}
+	}
+
+
+	if err != nil {
+		return nil, err
+	}
+	return tracks, nil
 }
 
