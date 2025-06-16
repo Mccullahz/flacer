@@ -1,0 +1,98 @@
+/* ==========================
+   header specific styles
+========================== */
+.header {
+  background-color: var(--color-gray);
+  height: 4rem;
+  padding: 0 1rem;
+  display: flex;
+  position: fixed;
+  align-items: center;
+  justify-content: space-between;
+  top: 0;
+  left: 20%;
+  right: 0;
+}
+
+.music-controls {
+  background-color: var(--color-gray);
+  color: var(--color-light);
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+.control-button {
+  background-color: var(--color-gray);
+  color: var(--color-light);
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition);
+  padding: 0.5rem;
+  margin: 0.25rem;
+}
+
+.now-playing {
+  background-color: var(--color-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: center;
+  width: 45%;
+  height: 80%;
+}
+
+.now-playing .track-icon {
+  border-radius: var(--radius);
+  padding-left: 1rem;
+  align-content: center;
+  justify-content: center;
+  width: 10%;
+  height: 100%;
+}
+
+/* ==========================
+   Sidebar specific styles
+========================== */
+.logo {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.sidebar {
+  background-color: var(--color-gray);
+  width: 20%;
+  box-shadow: 0 1px 1px var(--color-light);
+  height: 100%;
+  position: fixed;
+  align-items: left;
+  display: flex;
+  flex-direction: row;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.add-button {
+  background-color: var(--color-gray);
+  color: var(--color-light);
+  width: 80%;
+  height: 10%;
+  margin-top: 5rem;
+  margin-right: 20%;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+/* ==========================
+   Main content area
+========================== */
+.main-content {
+  margin-left: 20%; /* width of sidebar */
+  padding: 1.5rem;
+  padding-top: 5rem;
+  align-contentcenter;
+  box-sizing: border-box;
+  min-height: 100%;
+}
+

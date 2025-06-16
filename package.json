@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@wailsio/runtime": "^3.0.0-alpha.66",
+    "lucide-react": "^0.513.0"
+  }
+}
