@@ -1,0 +1,44 @@
+/*------------------------
+ * Album Card Component Specific Styles
+ * -----------------------*/
+
+.album-card {
+  width: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #1e1e1e;
+  color: white;
+  transition: transform 0.2s ease;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.album-card:hover {
+  transform: scale(1.05);
+}
+
+.album-cover img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  border-bottom: 1px solid #333;
+}
+
+.album-info {
+  padding: 12px;
+  text-align: center;
+}
+
+.album-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.album-artist {
+  margin: 4px 0 0 0;
+  font-size: 0.9rem;
+  color: #aaa;
+}
+

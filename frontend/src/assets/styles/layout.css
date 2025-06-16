@@ -96,3 +96,10 @@
   min-height: 100%;
 }
 
+.album-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+  padding: 24px;
+}
+
