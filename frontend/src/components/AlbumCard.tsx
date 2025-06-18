@@ -14,7 +14,9 @@ const AlbumCard: React.FC<AlbumCardProps> = ({ albumName, artistName, coverPath,
   return (
     <div className="album-card" onClick={onClick}>
       <div className="album-cover">
-        <img src={coverPath} alt={`${albumName} cover`} loading="lazy" />
+        <img src={coverPath} 
+	alt={`${albumName} cover`} 
+	loading="lazy" />
       </div>
       <div className="album-info">
         <h3 className="album-title">{albumName}</h3>
