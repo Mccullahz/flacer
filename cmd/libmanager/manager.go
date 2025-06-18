@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
+    	"github.com/dhowden/tag"
 	"github.com/google/uuid"
 )
 
@@ -23,10 +23,16 @@ func NewLibrary(path string) (*Library, error) {
 	if err := os.MkdirAll(path, 0755); err != nil {
 		return nil, err
 	}
-	return &Library{
+
+	lib := &Library{
 		Tracks: make(map[string]Track),
 		Dir:    path,
-	}, nil
+	}
+
+	// try to load previous data
+	_ = lib.Load(filepath.Join(path, "library.json"))
+
+	return lib, nil
 }
 
 // copy a file to an album folder
@@ -48,6 +54,19 @@ func (l *Library) AddTrackToAlbum(srcPath string, albumName string) (Track, erro
 	}
 
 	id := uuid.NewString()
+
+	var artist string = "Unknown Artist"
+    	f, err := os.Open(dst)
+    	if err == nil {
+        	defer f.Close()
+        	metadata, err := tag.ReadFrom(f)
+        	if err == nil {
+        	    if metadata.Artist() != "" {
+	                artist = metadata.Artist()
+	            }
+        	}
+    	}
+
 	track := Track{
 		ID:        id,
 		FilePath:  dst,
@@ -55,10 +74,16 @@ func (l *Library) AddTrackToAlbum(srcPath string, albumName string) (Track, erro
 		Title:     strings.TrimSuffix(originalName, ext),
 		Format:    ext[1:], // remove dot
 		Album:     albumName,
+		Artist:    artist, // lsp throwing error, but this works lol
 		DateAdded: time.Now(),
 	}
 
 	l.Tracks[id] = track
+	// save the updated lib to json for persistence
+	if err := l.Save(filepath.Join(l.Dir, "library.json")); err != nil {
+		return track, err
+	}
+
 	return track, nil
 }
 
@@ -108,6 +133,32 @@ func copyFile(src, dst string) error {
 	defer out.Close()
 
 	_, err = io.Copy(out, in)
+	return err
+}
+
+// used to rescan the lib. recursively walks the library directory can be ran on startup
+func (l *Library) ScanLibrary() error {
+	err := filepath.Walk(l.Dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil || info.IsDir() {
+			return nil
+		}
+
+		ext := strings.ToLower(filepath.Ext(path))
+		if ext != ".flac" && ext != ".wav" {
+			return nil
+		}
+
+		// !duplicates
+		for _, track := range l.Tracks {
+			if track.FilePath == path {
+				return nil
+			}
+		}
+		albumName := filepath.Base(filepath.Dir(path))
+		// autosaves
+		_, err = l.AddTrackToAlbum(path, albumName)
+		return err
+	})
 	return err
 }
 

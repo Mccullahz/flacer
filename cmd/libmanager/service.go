@@ -2,12 +2,26 @@ package libmanager
 
 import (
 	"os"
+	"time"
 	"path/filepath"
 	"strings"
 	"errors"
 	"context"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
+
+// track struct from types.go
+type Track struct {
+	ID        string    `json:"id"`
+	FilePath  string    `json:"filePath"`
+	Title     string    `json:"title"`
+	Format    string    `json:"format"`
+	Album     string    `json:"album"`
+	Artist    string    `json:"artist"`
+	Original  string    `json:"original"`
+	DateAdded time.Time `json:"dateAdded"`
+}
+
 
 type Service struct {
 	library *Library
@@ -21,6 +35,7 @@ func (s *Service) SetContext(ctx context.Context) {
 
 func NewService() *Service {
 	lib, _ := NewLibrary("./library")
+	lib.ScanLibrary() // load existing tracks
 	return &Service{library: lib}
 }
 
@@ -76,4 +91,14 @@ func (s *Service) AddMusicFolder(folderPath string) ([]Track, error) {
 	}
 	return tracks, nil
 }
+
+// return all tracks in the library
+func (s *Service) GetAllTracks() ([]Track, error) {
+	tracks := make([]Track, 0, len(s.library.Tracks))
+	for _, track := range s.library.Tracks {
+		tracks = append(tracks, track)
+	}
+	return tracks, nil
+}
+
 
