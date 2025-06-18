@@ -6,6 +6,10 @@ export function AddMusicFolder(arg1) {
   return window['go']['libmanager']['Service']['AddMusicFolder'](arg1);
 }
 
+export function GetAllTracks() {
+  return window['go']['libmanager']['Service']['GetAllTracks']();
+}
+
 export function OpenDirectorySelector() {
   return window['go']['libmanager']['Service']['OpenDirectorySelector']();
 }

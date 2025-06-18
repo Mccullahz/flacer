@@ -6,6 +6,7 @@ export namespace libmanager {
 	    title: string;
 	    format: string;
 	    album: string;
+	    artist: string;
 	    original: string;
 	    // Go type: time
 	    dateAdded: any;
@@ -21,6 +22,7 @@ export namespace libmanager {
 	        this.title = source["title"];
 	        this.format = source["format"];
 	        this.album = source["album"];
+	        this.artist = source["artist"];
 	        this.original = source["original"];
 	        this.dateAdded = this.convertValues(source["dateAdded"], null);
 	    }

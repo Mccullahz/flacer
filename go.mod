@@ -3,6 +3,7 @@ module flacer
 go 1.23
 
 require (
+	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8
 	github.com/go-audio/wav v1.1.0
 	github.com/google/uuid v1.6.0
 	github.com/hajimehoshi/oto/v2 v2.4.2

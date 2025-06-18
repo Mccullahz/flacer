@@ -5,6 +5,8 @@ import {context} from '../models';
 
 export function AddMusicFolder(arg1:string):Promise<Array<libmanager.Track>>;
 
+export function GetAllTracks():Promise<Array<libmanager.Track>>;
+
 export function OpenDirectorySelector():Promise<string>;
 
 export function SetContext(arg1:context.Context):Promise<void>;
