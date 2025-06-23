@@ -4,6 +4,7 @@ import './assets/styles/style.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
+import AlbumView from './pages/AlbumView';
 import Settings from './pages/Settings';
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
+	  <Route path="/album/:albumName" element={<AlbumView />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
       </Layout>

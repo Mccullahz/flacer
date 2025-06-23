@@ -1,22 +1,19 @@
-// reuseable card component for displaying album information on the home / library page
-import "../assets/styles/layout.css";
+import { useNavigate } from 'react-router-dom';
 import "../assets/styles/card.css";
-import React from 'react';
 
 type AlbumCardProps = {
   albumName: string;
   artistName?: string;
-  coverPath: string; // relative or absolute path to the cover image
-  onClick?: () => void;
+  coverPath: string;
 };
 
-const AlbumCard: React.FC<AlbumCardProps> = ({ albumName, artistName, coverPath, onClick }) => {
+const AlbumCard = ({ albumName, artistName, coverPath }: AlbumCardProps) => {
+  const navigate = useNavigate();
+
   return (
-    <div className="album-card" onClick={onClick}>
+    <div className="album-card" onClick={() => navigate(`/album/${encodeURIComponent(albumName)}`)}>
       <div className="album-cover">
-        <img src={coverPath} 
-	alt={`${albumName} cover`} 
-	loading="lazy" />
+      <img src={`file:///${coverPath}`} alt="Missing Album Cover" />
       </div>
       <div className="album-info">
         <h3 className="album-title">{albumName}</h3>

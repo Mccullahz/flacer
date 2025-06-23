@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import AlbumCard from '../components/AlbumCard';
 import '../assets/styles/card.css';
 import { GetAllTracks } from '../../wailsjs/go/libmanager/Service';
+import { RescanLibrary } from '../../wailsjs/go/libmanager/Service';
 
 type AlbumInfo = { albumName: string; artistName?: string; coverPath: string; };
 type Track = Awaited<ReturnType<typeof GetAllTracks>>[number];
@@ -18,15 +19,7 @@ useEffect(() => {
         const album = track.album || 'Unknown Album';
 
         if (!albumMap.has(album)) {
-          const basePath = track.filePath.substring(0, track.filePath.lastIndexOf('/'));
-          const coverCandidates = ['cover.jpg', 'cover.png', 'folder.jpg', 'folder.png'];
-          let coverPath = '';
-
-          for (const candidate of coverCandidates) {
-            const fullPath = `${basePath}/${candidate}`;
-            coverPath = fullPath;
-            break;
-          }
+ 	  const coverPath = track.coverPath || '';
 
           albumMap.set(album, {
             albumName: album,
@@ -46,6 +39,7 @@ useEffect(() => {
 }, []);
 
   return (
+    RescanLibrary(), // ensure the library is refreshed on initial load
     <div className="album-grid-container">
       {albums.length === 0 ? (
         <p style={{ color: 'white' }}>No albums found.</p>

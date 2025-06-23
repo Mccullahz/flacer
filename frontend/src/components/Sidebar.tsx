@@ -1,5 +1,5 @@
 import '../assets/styles/layout.css';
-import { AddMusicFolder, OpenDirectorySelector } from '../../wailsjs/go/libmanager/Service';
+import { AddMusicFolder, OpenDirectorySelector, RescanLibrary } from '../../wailsjs/go/libmanager/Service';
 
 export default function Sidebar() {
 const handleAddMusic = async () => {
@@ -13,6 +13,7 @@ const handleAddMusic = async () => {
     console.error("Error adding music folder:", error);
     alert("Failed to add music from folder.");
   }
+  RescanLibrary(); // refresh the library after adding new music
 };
 
   return (
