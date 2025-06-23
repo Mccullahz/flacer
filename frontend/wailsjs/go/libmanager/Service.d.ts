@@ -9,4 +9,6 @@ export function GetAllTracks():Promise<Array<libmanager.Track>>;
 
 export function OpenDirectorySelector():Promise<string>;
 
+export function RescanLibrary():Promise<Array<libmanager.Track>>;
+
 export function SetContext(arg1:context.Context):Promise<void>;

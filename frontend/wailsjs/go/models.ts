@@ -10,6 +10,7 @@ export namespace libmanager {
 	    original: string;
 	    // Go type: time
 	    dateAdded: any;
+	    coverPath: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Track(source);
@@ -25,6 +26,7 @@ export namespace libmanager {
 	        this.artist = source["artist"];
 	        this.original = source["original"];
 	        this.dateAdded = this.convertValues(source["dateAdded"], null);
+	        this.coverPath = source["coverPath"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

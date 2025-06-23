@@ -14,6 +14,10 @@ export function OpenDirectorySelector() {
   return window['go']['libmanager']['Service']['OpenDirectorySelector']();
 }
 
+export function RescanLibrary() {
+  return window['go']['libmanager']['Service']['RescanLibrary']();
+}
+
 export function SetContext(arg1) {
   return window['go']['libmanager']['Service']['SetContext'](arg1);
 }
