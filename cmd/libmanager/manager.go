@@ -35,6 +35,23 @@ func NewLibrary(path string) (*Library, error) {
 	return lib, nil
 }
 
+// helper function to pull only the album name from a directory name
+func parseAlbumName(dirName string) string {
+	// split by " - " to separate artist and album
+	if strings.Contains(dirName, " - ") {
+		parts := strings.SplitN(dirName, " - ", 2)
+		albumPart := parts[1]
+
+		// Remove trailing year
+		if idx := strings.LastIndex(albumPart, "("); idx != -1 {
+			albumPart = strings.TrimSpace(albumPart[:idx])
+		}
+		return strings.TrimSpace(albumPart)
+	}
+	return strings.TrimSpace(dirName)
+}
+
+
 // copy a file to an album folder
 func (l *Library) AddTrackToAlbum(srcPath string, albumName string) (Track, error) {
 	ext := strings.ToLower(filepath.Ext(srcPath))
@@ -43,7 +60,9 @@ func (l *Library) AddTrackToAlbum(srcPath string, albumName string) (Track, erro
 	}
 
 	originalName := filepath.Base(srcPath)
-	albumDir := filepath.Join(l.Dir, albumName)
+	parsedAlbumName := parseAlbumName(albumName)
+	albumDir := filepath.Join(l.Dir, parsedAlbumName)
+
 	if err := os.MkdirAll(albumDir, 0755); err != nil {
 		return Track{}, err
 	}
@@ -66,16 +85,19 @@ func (l *Library) AddTrackToAlbum(srcPath string, albumName string) (Track, erro
 	            }
         	}
     	}
-
+	// just initializing, value set in service.go, AddMusicFolder()
+	var coverPath string = ""
+	
 	track := Track{
 		ID:        id,
 		FilePath:  dst,
 		Original:  originalName,
 		Title:     strings.TrimSuffix(originalName, ext),
 		Format:    ext[1:], // remove dot
-		Album:     albumName,
-		Artist:    artist, // lsp throwing error, but this works lol
+		Album:     parsedAlbumName,
+		Artist:    artist, 
 		DateAdded: time.Now(),
+		CoverPath: coverPath,
 	}
 
 	l.Tracks[id] = track
@@ -83,6 +105,16 @@ func (l *Library) AddTrackToAlbum(srcPath string, albumName string) (Track, erro
 	if err := l.Save(filepath.Join(l.Dir, "library.json")); err != nil {
 		return track, err
 	}
+	albumDirName := filepath.Base(albumDir)
+
+	// fallback if artist is still unknown, lets see how this goes
+	if artist == "Unknown Artist" && strings.Contains(albumDirName, " - ") {
+		parts := strings.SplitN(albumDirName, " - ", 2)
+		if len(parts) == 2 {
+			artist = parts[0]
+		}
+}
+
 
 	return track, nil
 }
@@ -136,7 +168,7 @@ func copyFile(src, dst string) error {
 	return err
 }
 
-// used to rescan the lib. recursively walks the library directory can be ran on startup
+// used to scan the lib. recursively walks the library directory can be ran on startup
 func (l *Library) ScanLibrary() error {
 	err := filepath.Walk(l.Dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil || info.IsDir() {
@@ -154,7 +186,8 @@ func (l *Library) ScanLibrary() error {
 				return nil
 			}
 		}
-		albumName := filepath.Base(filepath.Dir(path))
+		folderName := filepath.Base(filepath.Dir(path))
+		albumName := parseAlbumName(folderName)
 		// autosaves
 		_, err = l.AddTrackToAlbum(path, albumName)
 		return err

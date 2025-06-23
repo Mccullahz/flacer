@@ -20,6 +20,7 @@ type Track struct {
 	Artist    string    `json:"artist"`
 	Original  string    `json:"original"`
 	DateAdded time.Time `json:"dateAdded"`
+	CoverPath string    `json:"coverPath"`
 }
 
 
@@ -47,48 +48,62 @@ func (s *Service) OpenDirectorySelector() (string, error) {
 }
 
 // frontend calls this to add tracks from folder
+// sorry to future me, this function is a clusterfuck
 func (s *Service) AddMusicFolder(folderPath string) ([]Track, error) {
 	if folderPath == "" {
 		return nil, errors.New("no folder selected")
 	}
 
-	albumName := filepath.Base(folderPath) // use folder name as album name
+	folderName := filepath.Base(folderPath)
+	parsedAlbumName := parseAlbumName(folderName)
+	albumDir := filepath.Join(s.library.Dir, parsedAlbumName)
+
+	if err := os.MkdirAll(albumDir, 0755); err != nil {
+		return nil, err
+	}
+
 	var tracks []Track
+	var copiedCover bool
+	var finalCoverPath string
 
 	err := filepath.Walk(folderPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil || info.IsDir() {
 			return nil
 		}
+
 		ext := strings.ToLower(filepath.Ext(path))
+
 		if ext == ".flac" || ext == ".wav" {
-			track, err := s.library.AddTrackToAlbum(path, albumName)
+			track, err := s.library.AddTrackToAlbum(path, folderName)
 			if err == nil {
 				tracks = append(tracks, track)
+			}
+		} else if !copiedCover && (ext == ".jpg" || ext == ".jpeg" || ext == ".png") {
+			dest := filepath.Join(albumDir, "cover"+ext)
+			if err := copyFile(path, dest); err == nil {
+				finalCoverPath = dest
+				copiedCover = true
 			}
 		}
 		return nil
 	})
-	// scan for album art
-	files, err := os.ReadDir(folderPath)
-	if err == nil {
-		for _, file := range files {
-			if file.IsDir() {
-				continue
-			}
-			ext := strings.ToLower(filepath.Ext(file.Name()))
-			if ext == ".jpg" || ext == ".jpeg" || ext == ".png" {
-				srcCover := filepath.Join(folderPath, file.Name())
-				destCover := filepath.Join(s.library.Dir, albumName, "cover"+ext)
-				_ = copyFile(srcCover, destCover)
-				break // only copy the first valid cover found
-			}
-		}
-	}
-
 
 	if err != nil {
 		return nil, err
 	}
+
+	// set cover path for each track and update the in-memory library
+	if finalCoverPath != "" {
+		absCoverPath, _ := filepath.Abs(finalCoverPath)
+		for i, track := range tracks {
+			track.CoverPath = absCoverPath
+			s.library.Tracks[track.ID] = track
+			tracks[i] = track // update slice
+		}
+		// Save updated library to disk
+		_ = s.library.Save(filepath.Join(s.library.Dir, "library.json"))
+	}
+
 	return tracks, nil
 }
 
@@ -101,4 +116,10 @@ func (s *Service) GetAllTracks() ([]Track, error) {
 	return tracks, nil
 }
 
+func (s *Service) RescanLibrary() ([]Track, error) {
+	if err := s.library.ScanLibrary(); err != nil {
+		return nil, err
+	}
+	return s.GetAllTracks()
+}
 
