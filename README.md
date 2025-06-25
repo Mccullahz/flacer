@@ -1,5 +1,5 @@
 # Flacer - Cross-Platform High Resolution Audio Player
-
+![Flacer Preview](/home/zyguythearchguy/code/flacer/flacer-prev.gif)
 ## About
 
 Flacer is an in development cross-platform audio player that aims to provide a simple and intuitive interface to play high resolution audio files such as FLAC or WAC. It is built using the Go Wails framework, which allows for the creation of desktop applications with a web frontend.
