@@ -2,6 +2,7 @@ package libmanager
 
 import (
 	"os"
+	"fmt"
 	"time"
 	"path/filepath"
 	"strings"
@@ -87,7 +88,7 @@ func (s *Service) AddMusicFolder(folderPath string) ([]Track, error) {
 		}
 		return nil
 	})
-
+	s.library.ScanLibrary() // refresh library after adding tracks
 	if err != nil {
 		return nil, err
 	}
@@ -120,6 +121,7 @@ func (s *Service) RescanLibrary() ([]Track, error) {
 	if err := s.library.ScanLibrary(); err != nil {
 		return nil, err
 	}
+	fmt.Println("Rescanned library, total tracks:", len(s.library.Tracks))
 	return s.GetAllTracks()
 }
 
