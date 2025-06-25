@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
+import { EventsOn } from '../../wailsjs/runtime';
 import AlbumCard from '../components/AlbumCard';
 import '../assets/styles/card.css';
 import { GetAllTracks } from '../../wailsjs/go/libmanager/Service';
-import { RescanLibrary } from '../../wailsjs/go/libmanager/Service';
 
-type AlbumInfo = { albumName: string; artistName?: string; coverPath: string; };
+type AlbumInfo = { albumName: string; artistName?: string; coverPath: string };
 type Track = Awaited<ReturnType<typeof GetAllTracks>>[number];
+
 const Home = () => {
   const [albums, setAlbums] = useState<AlbumInfo[]>([]);
 
-useEffect(() => {
   const loadLibrary = async () => {
     try {
       const tracks: Track[] = await GetAllTracks();
@@ -19,7 +19,7 @@ useEffect(() => {
         const album = track.album || 'Unknown Album';
 
         if (!albumMap.has(album)) {
- 	  const coverPath = track.coverPath || '';
+          const coverPath = track.coverPath;
 
           albumMap.set(album, {
             albumName: album,
@@ -35,11 +35,17 @@ useEffect(() => {
     }
   };
 
-  loadLibrary();
-}, []);
+  // wails event should trigger refresh
+  useEffect(() => {
+    loadLibrary();
+
+    // event emitted from sidebar
+    const unsubscribe = EventsOn("library_updated", loadLibrary);
+
+    return () => unsubscribe();
+  }, []);
 
   return (
-    RescanLibrary(), // ensure the library is refreshed on initial load
     <div className="album-grid-container">
       {albums.length === 0 ? (
         <p style={{ color: 'white' }}>No albums found.</p>

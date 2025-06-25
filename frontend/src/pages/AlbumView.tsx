@@ -32,6 +32,9 @@ const AlbumPage = () => {
       <button onClick={() => navigate(-1)} className="back-button">
         ⬅ Back
       </button>
+      <button onClick={() => {}} className="manage-button">
+      ⚙ 
+      </button>
 
       <div className="album-header">
         <img src={coverPath} alt="Missing Album Cover" className="album-header-cover" />
@@ -40,6 +43,12 @@ const AlbumPage = () => {
           <p>{artist}</p>
         </div>
       </div>
+
+	<div className="album-header-actions">
+ 	     <button onClick={() => {}} className="play-all-button">
+	     ▶ Play
+	      </button>
+      	</div>
 
       <ul className="track-list">
         {tracks.map((track) => (

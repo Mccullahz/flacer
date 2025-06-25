@@ -66,6 +66,19 @@
   color: var(--color-theme);
 }
 
+.manage-button {
+  background: none;
+  border: none;
+  color: var(--color-light);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  margin-left: 92%;
+}
+.manage-button:hover {
+  color: var(--color-theme);
+}
+
 .album-header {
   display: flex;
   align-items: center;
@@ -74,8 +87,8 @@
 }
 
 .album-header-cover {
-  width: 45%;
-  height: 45%;
+  width: 30%;
+  height: 30%;
   object-fit: cover;
   border-radius: 8px;
 }
@@ -90,6 +103,25 @@
   color: var(--color-theme);
   font-size: 1rem;
   margin-top: 4px;
+}
+
+.album-header-actions {
+  margin-left: 32%;
+  align-items: center;
+  display: column;
+}
+
+.play-all-button {
+  background: none;
+  border: none;
+  color: var(--color-theme);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.play-all-button:hover {
+  color: var(--color-light);
 }
 
 .track-list {

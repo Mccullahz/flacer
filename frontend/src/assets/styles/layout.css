@@ -55,6 +55,9 @@
    Sidebar specific styles
 ========================== */
 .logo {
+  color: var(--color-light);
+  background-color: var(--color-gray);
+  height: 3rem;
   font-size: 1.25rem;
   font-weight: 600;
 }
