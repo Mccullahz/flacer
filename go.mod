@@ -4,17 +4,12 @@ go 1.23
 
 require (
 	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8
-	github.com/go-audio/wav v1.1.0
 	github.com/google/uuid v1.6.0
-	github.com/hajimehoshi/oto/v2 v2.4.2
 	github.com/wailsapp/wails/v2 v2.10.1
 )
 
 require (
 	github.com/bep/debounce v1.2.1 // indirect
-	github.com/ebitengine/purego v0.4.1 // indirect
-	github.com/go-audio/audio v1.0.0 // indirect
-	github.com/go-audio/riff v1.0.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect

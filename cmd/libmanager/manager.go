@@ -35,7 +35,7 @@ func NewLibrary(path string) (*Library, error) {
 	return lib, nil
 }
 
-// helper function to pull only the album name from a directory name
+// helper function to pull only the album name from a directory name -- should probably move into metadata?
 func parseAlbumName(dirName string) string {
 	// split by " - " to separate artist and album
 	if strings.Contains(dirName, " - ") {

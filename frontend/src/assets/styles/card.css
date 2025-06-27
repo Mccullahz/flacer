@@ -22,7 +22,7 @@
   height: 200px;
   object-fit: cover;
   display: block;
-  border-bottom: 1px solid var(--color-gray);
+  border: none;
 }
 
 .album-info {
