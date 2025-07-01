@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { GetAllTracks } from '../../wailsjs/go/libmanager/Service';
+import ManageMenu from '../components/ManageMenu';
 import '../assets/styles/card.css';
 
 type Track = Awaited<ReturnType<typeof GetAllTracks>>[number];
@@ -27,15 +28,30 @@ const AlbumPage = () => {
     fetch();
   }, [albumName]);
 
+const [showManageMenu, setShowManageMenu] = useState(false);
+
+const handleDeleteAlbum = () => {
+  alert("Album deleted!"); {/* TODO: hook into Go*/}
+  setShowManageMenu(false);
+};
+
+const toggleManageMenu = () => setShowManageMenu(!showManageMenu);
+
+
   return (
     <div className="album-view-container">
       <button onClick={() => navigate(-1)} className="back-button">
         ⬅ Back
       </button>
-      <button onClick={() => {}} className="manage-button">
+      <button onClick={(toggleManageMenu)} className="manage-button">
       ⚙ 
       </button>
-
+	{showManageMenu && (
+	  <ManageMenu
+	    onClose={() => setShowManageMenu(false)}
+	    onDelete={handleDeleteAlbum}
+	  />
+	)}
       <div className="album-header">
         <img src={coverPath} alt="Missing Album Cover" className="album-header-cover" />
         <div className="album-header-info">
